@@ -1,21 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\PayPalController;
 use Illuminate\Support\Facades\Route;
-use App\Models\Payment;
 
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
-
-Route::middleware('auth:api')->prefix('transactions')->group(function(){
-
-        Route::post('', [Payment::class, 'createTransaction']);
-        Route::get('/prosses', [payment::class, 'processTransaction']);
-        Route::get('/succes', [payment::class, 'successTransaction']);
-        Route::get('/cancel', [payment::class, 'cancelTransaction']);
-
-}
-
-    );
+Route::middleware('auth:api')->prefix('transactions')->group(function () {
+    Route::post('', [PayPalController::class, 'createTransaction']);
+    Route::get('/success', [PayPalController::class, 'successTransaction'])->name('successTransaction');
+    Route::get('/cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
+});
