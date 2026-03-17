@@ -7,14 +7,30 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\FilmController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\RoomController;
 
     Route::get('/films', [FilmController::class, 'index']);
     Route::get('/films/{film}', [FilmController::class, 'show']);
+
+    Route::get('/sessions', [SessionController::class, 'index']);
+    Route::get('/sessions/{film_session}', [SessionController::class, 'show']);
+
+    Route::get('/rooms', [RoomController::class, 'index']);
+    Route::get('/rooms/{room}', [RoomController::class, 'show']);
 
     Route::get('/tickets/{ticketId}/donwload', [TicketController::class, 'donwloadReceipt']);
 
     // Protected Routes (JWT)
     Route::middleware('auth:api')->group(function () {
+
+        Route::post('/sessions', [SessionController::class, 'store']);
+        Route::put('/sessions/{film_session}', [SessionController::class, 'update']);
+        Route::delete('/sessions/{film_session}', [SessionController::class, 'destroy']);
+
+        Route::post('/rooms', [RoomController::class, 'store']);
+        Route::put('/rooms/{room}', [RoomController::class, 'update']);
+        Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
 
         // Auth management
         Route::post('logout', [AuthController::class, 'logout']);
@@ -47,4 +63,3 @@ use Illuminate\Support\Facades\Route;
         Route::get('transactions/cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
     });
 
-});

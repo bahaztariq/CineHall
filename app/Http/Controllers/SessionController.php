@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Session;
+use App\Models\session;
 use App\Http\Requests\StoreFilmSessionRequest;
 use App\Http\Requests\UpdateFilmSessionRequest;
 use Illuminate\Support\Facades\Gate;
@@ -15,7 +15,7 @@ class SessionController extends Controller
     public function index()
     {
         
-        $sessions = Session::with(['film', 'room'])
+        $sessions = session::with(['film', 'room'])
             ->orderBy('start_time', 'asc')
             ->paginate(15);
 
@@ -25,7 +25,7 @@ class SessionController extends Controller
     /**
      * Show a specific film session. (Public)
      */
-    public function show(Session $filmSession)
+    public function show(session $filmSession)
     {
         return response()->json($filmSession->load(['film', 'room']));
     }
@@ -59,7 +59,7 @@ class SessionController extends Controller
     /**
      * Delete a film session. (Admin Only)
      */
-    public function destroy(Session $filmSession)
+    public function destroy(session $filmSession)
     {
         Gate::authorize('admin');
 
