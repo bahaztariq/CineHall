@@ -9,4 +9,11 @@ class reservation extends Model
 {
     /** @use HasFactory<\Database\Factories\ReservationFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'session_id',
+        'status',
+        'paid_at',
+    ];
 }
