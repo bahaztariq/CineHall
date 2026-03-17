@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FilmController;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\RoomController;
 
 Route::get('/films', [FilmController::class, 'index']);
 Route::get('/films/{film}', [FilmController::class, 'show']);
@@ -16,6 +17,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::match(['put', 'patch'], '/films/{film}', [FilmController::class, 'update']);
     Route::delete('/films/{film}', [FilmController::class, 'destroy']);
     
+});
+
+Route::get('/sessions', [SessionController::class, 'index']);
+Route::get('/sessions/{film_session}', [SessionController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/sessions', [SessionController::class, 'store']);
+    Route::put('/sessions/{film_session}', [SessionController::class, 'update']);
+    Route::delete('/sessions/{film_session}', [SessionController::class, 'destroy']);
+});
+
+Route::get('/rooms', [RoomController::class, 'index']);
+Route::get('/rooms/{room}', [RoomController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/rooms', [RoomController::class, 'store']);
+    Route::put('/rooms/{room}', [RoomController::class, 'update']);
+    Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
 });
 
 Route::get('/user', function (Request $request) {

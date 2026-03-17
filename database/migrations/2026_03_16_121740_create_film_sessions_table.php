@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('film_id')->constrained('films')->cascadeOnDelete();
             $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
+            $table->enum('language', ['arabic', 'french', 'english']);
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->decimal('price', 8, 2);

@@ -2,65 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoresessionRequest;
-use App\Http\Requests\UpdatesessionRequest;
-use App\Models\session;
+use App\Models\Session;
+use App\Http\Requests\StoreFilmSessionRequest;
+use App\Http\Requests\UpdateFilmSessionRequest;
+use Illuminate\Support\Facades\Gate;
 
 class SessionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List all film sessions. (Public)
      */
     public function index()
     {
-        //
+        
+        $sessions = Session::with(['film', 'room'])
+            ->orderBy('start_time', 'asc')
+            ->paginate(15);
+
+        return response()->json($sessions);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show a specific film session. (Public)
      */
-    public function create()
+    public function show(Session $filmSession)
     {
-        //
+        return response()->json($filmSession->load(['film', 'room']));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a new film session. (Admin Only)
      */
-    public function store(StoresessionRequest $request)
+    public function store(StoreFilmSessionRequest $request)
     {
-        //
+        $session = Session::create($request->validated());
+
+        return response()->json([
+            'message' => 'Film session created successfully.',
+            'data'    => $session->load(['film', 'room'])
+        ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Update an existing film session. (Admin Only)
      */
-    public function show(session $session)
+    public function update(UpdateFilmSessionRequest $request, Session $filmSession)
     {
-        //
+        $filmSession->update($request->validated());
+
+        return response()->json([
+            'message' => 'Film session updated successfully.',
+            'data'    => $filmSession->load(['film', 'room'])
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Delete a film session. (Admin Only)
      */
-    public function edit(session $session)
+    public function destroy(Session $filmSession)
     {
-        //
-    }
+        Gate::authorize('admin');
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatesessionRequest $request, session $session)
-    {
-        //
-    }
+        $filmSession->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(session $session)
-    {
-        //
+        return response()->json([
+            'message' => 'Film session deleted successfully.'
+        ]);
     }
 }
