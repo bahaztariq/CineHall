@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\ReservationController;
@@ -18,6 +19,10 @@ Route::middleware('auth:sanctum')->group(function () {
     
 });
 
+Route::middleware('auth:api')->prefix('transactions')->group(function () {
+    Route::post('', [PayPalController::class, 'createTransaction']);
+    Route::get('/success', [PayPalController::class, 'successTransaction'])->name('successTransaction');
+    Route::get('/cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
