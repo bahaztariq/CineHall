@@ -24,6 +24,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'is_admin',
+        'status',
     ];
 
     /**
@@ -48,6 +50,12 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
         ];
     }
+
+    public function reservations(){
+
+      return $this->hasMany(reservation::class);
+    }
+
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
