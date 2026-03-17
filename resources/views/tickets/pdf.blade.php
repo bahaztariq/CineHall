@@ -12,7 +12,7 @@
     <div class="ticket">
         <h2>CinéHall - Ticket</h2>
         <p><strong>Reservation ID:</strong> {{ $ticket->reservation_id }}</p>
-        <p><strong>Seat:</strong> {{ $ticket->seat_number }}</p>
+        <p><strong>Seat:</strong> {{ $ticket->seat_id }}</p>
         <p><strong>User ID:</strong> {{ $ticket->user_id }}</p>
 
         <img src="data:image/png;base64, {{ $qrCode }}" alt="QR Code">

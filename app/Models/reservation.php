@@ -14,10 +14,7 @@ class reservation extends Model
         'seat_number'
     ];
 
-    public function reservation()
-    {
-        return $this->belongsTo(Reservation::class);
-    }
+    
 
     public function user()
     {

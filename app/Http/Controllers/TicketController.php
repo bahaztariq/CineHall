@@ -26,7 +26,7 @@ class TicketController extends Controller
         // generation de qr code
         $qrCode = base64_encode(Qrcode::format('png')
                 ->size(200)
-                ->generate("ReservationID:{$ticket->reservation_id}|Seat:{$ticket->seat_number}")
+                ->generate("ReservationID:{$ticket->reservation_id}|Seat:{$ticket->seat_id}")
         );
 
 

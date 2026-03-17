@@ -13,7 +13,7 @@ class ticket extends Model
     protected $fillable = [
         'reservation_id',
         'user_id',
-        'seat_number',
+        'seat_id',
         'qr_code_path',
     ];
 
@@ -23,6 +23,9 @@ class ticket extends Model
     }
 
 
+    public function seat(){
+        return $this->belongsTo(seat::class);
+    }
     public function user(){
         return $this->belongsTo(user::class);
     }
