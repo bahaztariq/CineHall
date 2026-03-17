@@ -15,7 +15,6 @@ class AppServiceProvider extends ServiceProvider
      */
 
     protected $policies = [
-        Film::class => FilmPolicy::class,
     ];
 
     public function register(): void

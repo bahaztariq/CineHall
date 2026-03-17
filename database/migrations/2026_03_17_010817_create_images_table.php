@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->string('path');
-            $table->morphs('imagable');
-            $table->timestamps();
+            $table->morphs('imageable');
         });
     }
 
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('images');
+         Schema::dropIfExists('images');
     }
 };
