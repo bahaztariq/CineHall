@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('session_id')->constrained('film_sessions')->onDelete('cascade');
+            $table->foreignId('seat_id')->nullable()->constrained('seats')->onDelete('cascade');
             $table->enum('status', ['pending', 'accepted', 'canceled'])->default('pending');
+            $table->timestamp('reserved_at');
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
