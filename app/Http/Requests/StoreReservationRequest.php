@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatereservationRequest extends FormRequest
+class StoreReservationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class UpdatereservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'session_id' => 'required|exists:film_sessions,id',
+            'seat_id' => 'required|exists:seats,id',
         ];
     }
 }

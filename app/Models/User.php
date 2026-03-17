@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
+        'status',
     ];
 
     /**
@@ -46,4 +48,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function reservations(){
+
+      return $this->hasMany(reservation::class);
+    }
+
+
 }
