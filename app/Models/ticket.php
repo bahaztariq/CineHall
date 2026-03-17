@@ -28,5 +28,15 @@ class ticket extends Model
     }
     public function user(){
         return $this->belongsTo(user::class);
+    ];
+
+    public function reservation()
+    {
+        return $this->belongsTo(reservation::class);
+    }
+
+    public function seat()
+    {
+        return $this->belongsTo(Seat::class);
     }
 }
