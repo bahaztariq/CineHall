@@ -19,6 +19,25 @@ class TicketController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+     public function donwloadReceipt($ticketId)
+    {   
+        $ticket = Ticket::findOrFail($ticketId);
+
+        // generation de qr code
+        $qrCode = base64_encode(Qrcode::format('png')
+                ->size(200)
+                ->generate("ReservationID:{$ticket->reservation_id}|Seat:{$ticket->seat_number}")
+        );
+
+
+        // genere le pdf ave la vue
+        $pdf = Pdf::loadView('tickets.pdf',[
+            'ticket' => $ticket,
+            'qrCode' => $qrCode,
+        ]);
+
+    }
+    
     public function create()
     {
         //
