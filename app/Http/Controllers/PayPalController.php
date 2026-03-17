@@ -9,7 +9,7 @@ class PayPalController extends Controller
 
     public function createTransaction(Request $request)
     {
-        $reservation_id = $request->reservation_id ?? 1; 
+        $reservation_id = $request->reservation_id ?? 1;
         $amount = $request->amount ?? "10.00";
 
         session(['reservation_id' => $reservation_id, 'amount' => $amount]);
