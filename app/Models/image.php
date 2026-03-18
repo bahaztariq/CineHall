@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class image extends Model
+class Image extends Model
 {
-    public function imagable()
+    
+
+
+    public function imageable(): MorphTo
     {
         return $this->morphTo();
     }
