@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\RoomController;
 
+
+    Route::prefix('v1')->group(function(){
+
+    Route::post('/login',[AuthController::class, 'login']);
+    Route::post('/register',[AuthController::class, 'register']);
+
     Route::get('/films', [FilmController::class, 'index']);
     Route::get('/films/{film}', [FilmController::class, 'show']);
 
@@ -63,3 +69,4 @@ use App\Http\Controllers\RoomController;
         Route::get('transactions/cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
     });
 
+});
