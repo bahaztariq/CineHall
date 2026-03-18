@@ -6,7 +6,7 @@ use App\Models\reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class stripeController extends Controller
+class StripeController extends Controller
 {
     /**
      * Create a Stripe Checkout Session for a reservation.
