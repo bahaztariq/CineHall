@@ -13,8 +13,6 @@ class session extends Model
     /** @use HasFactory<\Database\Factories\SessionFactory> */
     use HasFactory;
 
-    protected $fillable = [];
-
     protected $table = 'film_sessions' ;
     
     public function film(): BelongsTo
