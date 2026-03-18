@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -20,6 +21,9 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var list<string>
      */
+
+    protected $with = ['image'];
+    
     protected $fillable = [
         'name',
         'email',
@@ -51,9 +55,15 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    public function reservations(){
+    public function image(): MorphOne
+    {
+        return $this->morphOne(Image::class, "imageable");
+    }
 
-      return $this->hasMany(reservation::class);
+    public function reservations()
+    {
+
+        return $this->hasMany(reservation::class);
     }
 
 

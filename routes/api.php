@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ItineraryController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\FilmController;
@@ -12,10 +14,25 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController
 
 
-    Route::prefix('v1')->group(function(){
+Route::prefix('v1')->group(function () {
 
-    Route::post('/login',[AuthController::class, 'login']);
-    Route::post('/register',[AuthController::class, 'register']);
+
+    Route::prefix('auth')->group(function () {
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('register', [AuthController::class, 'register']);
+
+        Route::middleware('auth:api')->group(function () {
+            Route::post('logout', [AuthController::class, 'logout']);
+            Route::post('refresh', [AuthController::class, 'refresh']);
+        });
+    });
+
+
+    Route::prefix('profile')->middleware('auth:api')->group(function () {
+        Route::get('', [ProfileController::class, 'me']);
+        Route::post('', [ProfileController::class, 'update']);
+        Route::delete('', [ProfileController::class, 'delete']);
+    });
 
     Route::get('/films', [FilmController::class, 'index']);
     Route::get('/films/{film}', [FilmController::class, 'show']);
@@ -42,12 +59,6 @@ use App\Http\Controllers\AdminController
         Route::put('/rooms/{room}', [RoomController::class, 'update']);
         Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
 
-        // Auth management
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
-        Route::get('me', [AuthController::class, 'me']);
-        
-
         // Current User
         Route::get('/user', function (Request $request) {
             return $request->user();
@@ -72,5 +83,4 @@ use App\Http\Controllers\AdminController
         Route::get('transactions/success', [PayPalController::class, 'successTransaction'])->name('successTransaction');
         Route::get('transactions/cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
     });
-
 });
