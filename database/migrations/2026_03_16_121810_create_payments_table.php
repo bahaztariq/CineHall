@@ -17,13 +17,11 @@ return new class extends Migration
             $table->decimal('amount', 8, 2);
             $table->string('payment_method');
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->string('transaction_id')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('payments');
