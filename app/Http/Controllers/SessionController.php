@@ -14,7 +14,7 @@ class SessionController extends Controller
      */
     public function index()
     {
-        
+
         $sessions = session::with(['film', 'room'])
             ->orderBy('start_time', 'asc')
             ->paginate(15);

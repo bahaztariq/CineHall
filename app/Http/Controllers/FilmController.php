@@ -16,9 +16,10 @@ class FilmController extends Controller
      */
     public function index()
     {
-        $films = Film::with(['genres', 'image'])->paginate(10);
+        $films = Film::with(['genre', 'image'])->paginate(10);
 
         return response()->json($films);
+
     }
 
     /**
@@ -48,6 +49,8 @@ class FilmController extends Controller
         return response()->json($film->load(['genres', 'image']), 201);
     }
 
+
+
     /**
      * Update a film.
      */
@@ -68,7 +71,7 @@ class FilmController extends Controller
             }
 
             $path = $request->file('image')->store('films', 'public');
-            
+
             $film->image()->updateOrCreate(
                 ['imageable_id' => $film->id, 'imageable_type' => Film::class],
                 ['path' => $path]
@@ -83,7 +86,7 @@ class FilmController extends Controller
      */
     public function destroy(Film $film)
     {
-        
+
         Gate::authorize('admin');
 
         if ($film->image) {
@@ -96,5 +99,46 @@ class FilmController extends Controller
         return response()->json([
             'message' => 'Film and associated assets deleted successfully'
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $searched = $request->film;
+        $films = Film::where('title', 'like', '%' . $searched . '%')->get();
+
+        if ($films->isEmpty()) {
+            return response()->json([
+                'message' => 'film not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'film is found',
+            'data' => $films
+        ], 200);
+    }
+
+    public function filter(Request $request)
+    {
+        $query = Film::with(['genre', 'image']);
+
+        if ($request->has('genre_id')) {
+            $query->whereHas('genre', function ($q) use ($request) {
+                $q->where('genres.id', $request->genre_id);
+            });
+        }
+
+        $films = $query->get();
+
+        if ($films->isEmpty()) {
+            return response()->json([
+                'message' => 'No films match this genre'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Filtered films found',
+            'data' => $films
+        ], 200);
     }
 }

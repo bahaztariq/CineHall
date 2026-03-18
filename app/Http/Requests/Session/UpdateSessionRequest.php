@@ -32,7 +32,7 @@ class UpdateSessionRequest extends AdminFormRequest
                 function ($attribute, $value, $fail) use ($startTime, $endTime, $roomId) {
                     $overlap = DB::table('film_sessions')
                         ->where('room_id', $roomId)
-                        ->where('id', '!=', $this->route('film_session')->id) 
+                        ->where('id', '!=', $this->route('film_session')->id)
                         ->where(function ($query) use ($startTime, $endTime) {
                             $query->whereBetween('start_time', [$startTime, $endTime])
                                   ->orWhereBetween('end_time', [$startTime, $endTime])

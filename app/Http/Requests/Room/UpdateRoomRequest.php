@@ -27,7 +27,7 @@ class UpdateRoomRequest extends AdminFormRequest
         ];
     }
 
-    
+
     public function messages(): array
     {
         return [

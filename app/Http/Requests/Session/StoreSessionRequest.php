@@ -22,7 +22,7 @@ class StoreSessionRequest extends AdminFormRequest
             'start_time' => ['required', 'date', 'after:now'],
             'end_time'   => ['required', 'date', 'after:start_time'],
             'price'      => ['required', 'numeric', 'min:0'],
-            
+
             'room_id' => [
                 'required',
                 function ($attribute, $value, $fail) {

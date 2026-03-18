@@ -14,7 +14,7 @@ class session extends Model
     use HasFactory;
 
     protected $table = 'film_sessions' ;
-    
+
     public function film(): BelongsTo
     {
         return $this->belongsTo(Film::class);

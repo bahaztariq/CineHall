@@ -10,7 +10,7 @@ class ticket extends Model
     /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
 
-    protected $fillable = [
+   protected $fillable = [
         'reservation_id',
         'user_id',
         'seat_id',
@@ -25,7 +25,7 @@ class ticket extends Model
 
     public function seat(){
         return $this->belongsTo(seat::class);
-    }
+    };
     public function user(){
         return $this->belongsTo(user::class);
     }
