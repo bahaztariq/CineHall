@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Room;
 
 use App\Http\Requests\AdminFormRequest;
 use Illuminate\Validation\Rule;

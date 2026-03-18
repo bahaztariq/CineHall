@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Models\Seat;
-use App\Http\Requests\StoreRoomRequest;
-use App\Http\Requests\UpdateRoomRequest;
+use App\Http\Requests\Room\StoreRoomRequest;
+use App\Http\Requests\Room\UpdateRoomRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use App\Models\session;
@@ -30,7 +30,7 @@ class RoomController extends Controller
         return DB::transaction(function () use ($request) {
             $room = Room::create($request->validated());
 
-            
+
             $this->syncSeats($room, $request->capacity);
 
             return response()->json([
@@ -50,7 +50,7 @@ class RoomController extends Controller
             $room->update($request->validated());
             $newCapacity = $room->capacity;
 
-            
+
             if ($oldCapacity !== $newCapacity) {
                 $this->syncSeats($room, $newCapacity, $oldCapacity);
             }
@@ -65,17 +65,17 @@ class RoomController extends Controller
     public function destroy(Room $room)
     {
         Gate::authorize('admin');
-        
+
         $room->delete();
 
         return response()->json(['message' => 'Room and all its seats deleted.']);
     }
 
-    
+
     private function syncSeats(Room $room, int $newCapacity, int $oldCapacity = 0)
     {
         if ($newCapacity > $oldCapacity) {
-            
+
             $toAdd = $newCapacity - $oldCapacity;
             for ($i = 1; $i <= $toAdd; $i++) {
                 $room->seats()->create([
@@ -83,10 +83,10 @@ class RoomController extends Controller
                 ]);
             }
         } elseif ($newCapacity < $oldCapacity) {
-            
+
             $toDelete = $oldCapacity - $newCapacity;
             $room->seats()
-                ->orderBy('id', 'desc') 
+                ->orderBy('id', 'desc')
                 ->limit($toDelete)
                 ->delete();
         }

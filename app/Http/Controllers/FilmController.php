@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Film;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreFilmRequest;
-use App\Http\Requests\UpdateFilmRequest;
+use App\Http\Requests\Film\StoreFilmRequest;
+use App\Http\Requests\Film\UpdateFilmRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
 

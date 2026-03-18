@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Session;
 
 use App\Http\Requests\AdminFormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class StoreFilmSessionRequest extends AdminFormRequest
+class StoreSessionRequest extends AdminFormRequest
 {
     public function authorize(): bool
     {
@@ -22,7 +22,7 @@ class StoreFilmSessionRequest extends AdminFormRequest
             'start_time' => ['required', 'date', 'after:now'],
             'end_time'   => ['required', 'date', 'after:start_time'],
             'price'      => ['required', 'numeric', 'min:0'],
-            
+
             'room_id' => [
                 'required',
                 function ($attribute, $value, $fail) {

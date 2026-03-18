@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Session;
 
 use App\Http\Requests\AdminFormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class UpdateFilmSessionRequest extends AdminFormRequest
+class UpdateSessionRequest extends AdminFormRequest
 {
     public function authorize(): bool
     {
@@ -32,7 +32,7 @@ class UpdateFilmSessionRequest extends AdminFormRequest
                 function ($attribute, $value, $fail) use ($startTime, $endTime, $roomId) {
                     $overlap = DB::table('film_sessions')
                         ->where('room_id', $roomId)
-                        ->where('id', '!=', $this->route('film_session')->id) 
+                        ->where('id', '!=', $this->route('film_session')->id)
                         ->where(function ($query) use ($startTime, $endTime) {
                             $query->whereBetween('start_time', [$startTime, $endTime])
                                   ->orWhereBetween('end_time', [$startTime, $endTime])
