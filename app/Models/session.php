@@ -14,4 +14,9 @@ class session extends Model
     {
         return $this->belongsTo(Room::class);
     }
+
+    public function film()
+    {
+        return $this->belongsTo(Film::class);
+    }
 }

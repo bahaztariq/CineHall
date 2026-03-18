@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->group(function(){
      Route::get('/reservation/{id}',[ReservationController::class, 'show'])->name('reservations');
      Route::post('/reservation',[ReservationController::class, 'store'])->name('reservations');
      Route::put('/reservation/{id}',[ReservationController::class, 'update'])->name('reservations');
-     Route::delete('/reservation/{id}',[ReservationController::class, 'delete'])->name('reservations');
+     Route::delete('/reservation/{id}',[ReservationController::class, 'destroy'])->name('reservations');
 
 });
 Route::prefix('auth')->group(function () {
