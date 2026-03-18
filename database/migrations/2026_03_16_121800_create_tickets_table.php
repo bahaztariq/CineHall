@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('reservation_id')->constrained('reservations')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('qr_code_path')->nullable();
             $table->foreignId('seat_id')->constrained('seats')->cascadeOnDelete();
             $table->timestamps();
         });

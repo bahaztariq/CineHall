@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class reservation extends Model
 {
@@ -50,3 +50,5 @@ class reservation extends Model
       return $this->status === 'accepted';
     }
 }
+
+
