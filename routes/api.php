@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\AdminController
 
 
 Route::prefix('v1')->group(function () {
@@ -47,6 +48,9 @@ Route::prefix('v1')->group(function () {
     // Protected Routes (JWT)
     Route::middleware('auth:api')->group(function () {
 
+        Route::get('/statistics', [AdminController::class, 'statistics']);
+        Route::patch('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus']);
+
         Route::post('/sessions', [SessionController::class, 'store']);
         Route::put('/sessions/{film_session}', [SessionController::class, 'update']);
         Route::delete('/sessions/{film_session}', [SessionController::class, 'destroy']);
@@ -71,7 +75,7 @@ Route::prefix('v1')->group(function () {
             'show' => 'reservations.show',
             'store' => 'reservations.store',
             'update' => 'reservations.update',
-            'destroy' => 'reservations.delete',
+            'destroy' => 'reservations.destroy',
         ]);
 
         // Transactions
