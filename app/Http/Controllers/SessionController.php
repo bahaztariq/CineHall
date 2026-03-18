@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\session;
-use App\Http\Requests\StoreFilmSessionRequest;
-use App\Http\Requests\UpdateFilmSessionRequest;
+use App\Http\Requests\Session\StoreSessionRequest;
+use App\Http\Requests\Session\UpdateSessionRequest;
 use Illuminate\Support\Facades\Gate;
 
 class SessionController extends Controller
@@ -33,9 +33,9 @@ class SessionController extends Controller
     /**
      * Create a new film session. (Admin Only)
      */
-    public function store(StoreFilmSessionRequest $request)
+    public function store(StoreSessionRequest $request)
     {
-        $session = Session::create($request->validated());
+        $session = session::create($request->validated());
 
         return response()->json([
             'message' => 'Film session created successfully.',
@@ -46,7 +46,7 @@ class SessionController extends Controller
     /**
      * Update an existing film session. (Admin Only)
      */
-    public function update(UpdateFilmSessionRequest $request, Session $filmSession)
+    public function update(UpdateSessionRequest $request, session $filmSession)
     {
         $filmSession->update($request->validated());
 
