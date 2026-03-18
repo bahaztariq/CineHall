@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "d6f6b18054dabf91c6f99682350b8df6",
+=======
+    "content-hash": "c115a0e0a0e7c4703c35ef543efe4a3e",
+>>>>>>> 1300ca658a77acd9df01d2b0b53ebe170499792a
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1453,6 +1457,7 @@
             "time": "2025-08-22T14:27:06+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "laravel/cashier",
             "version": "v16.5.0",
             "source": {
@@ -1551,6 +1556,17 @@
             },
             "dist": {
                 "type": "zip",
+=======
+            "name": "laravel/framework",
+            "version": "v12.55.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "6917962a55ac91598e8c5e2ebd25e27aed121b5e"
+            },
+            "dist": {
+                "type": "zip",
+>>>>>>> 1300ca658a77acd9df01d2b0b53ebe170499792a
                 "url": "https://api.github.com/repos/laravel/framework/zipball/6917962a55ac91598e8c5e2ebd25e27aed121b5e",
                 "reference": "6917962a55ac91598e8c5e2ebd25e27aed121b5e",
                 "shasum": ""
@@ -4666,6 +4682,7 @@
                 "source": "https://github.com/srmklive/laravel-paypal/tree/3.0.40"
             },
             "time": "2025-02-25T21:38:18+00:00"
+<<<<<<< HEAD
         },
         {
             "name": "stripe/stripe-php",
@@ -4725,6 +4742,8 @@
                 "source": "https://github.com/stripe/stripe-php/tree/v17.6.0"
             },
             "time": "2025-08-27T19:32:42+00:00"
+=======
+>>>>>>> 1300ca658a77acd9df01d2b0b53ebe170499792a
         },
         {
             "name": "symfony/clock",
@@ -10128,12 +10147,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }
