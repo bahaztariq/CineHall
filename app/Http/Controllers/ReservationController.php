@@ -17,7 +17,11 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        //
+        $reservations = reservation::with(['session.film', 'seat'])
+            ->where('user_id', auth()->id())
+            ->get();
+
+        return response()->json($reservations);
     }
 
     /**
@@ -72,7 +76,11 @@ class ReservationController extends Controller
      */
     public function show(reservation $reservation)
     {
-        //
+        if ($reservation->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($reservation->load(['session.film', 'seat', 'tickets']));
     }
 
     /**
@@ -88,15 +96,26 @@ class ReservationController extends Controller
      */
     public function update(UpdateReservationRequest $request, reservation $reservation)
     {
-         if ($request->user()->id !== $reservation->user_id) {
+        if ($request->user()->id !== $reservation->user_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $reservation->update([
-            'status' => $request->validated()
+        DB::transaction(function () use ($request, $reservation) {
+            $reservation->update($request->validated());
+
+            if ($reservation->status === 'accepted') {
+                ticket::firstOrCreate([
+                    'reservation_id' => $reservation->id,
+                    'user_id' => $reservation->user_id,
+                    'seat_id' => $reservation->seat_id,
+                ]);
+            }
+        });
+
+        return response()->json([
+            'message' => 'Reservation updated successfully',
+            'reservation' => $reservation->load(['session.film', 'seat', 'tickets'])
         ]);
-        
-        return response()->json(['message' => 'Reservation updated successfully']);
     }
 
     /**
@@ -104,7 +123,7 @@ class ReservationController extends Controller
      */
     public function destroy(reservation $reservation)
     {
-         if ($request->user()->id !== $reservation->user_id) {
+        if (auth()->id() !== $reservation->user_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
