@@ -60,7 +60,7 @@ use App\Http\Controllers\RoomController;
             'show' => 'reservations.show',
             'store' => 'reservations.store',
             'update' => 'reservations.update',
-            'destroy' => 'reservations.delete',
+            'destroy' => 'reservations.destroy',
         ]);
 
         // Transactions
