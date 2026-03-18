@@ -11,26 +11,31 @@ use App\Http\Controllers\FilmController;
 Route::get('/films', [FilmController::class, 'index']);
 Route::get('/films/{film}', [FilmController::class, 'show']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    
+Route::middleware('auth:api')->group(function () {
+
     Route::post('/films', [FilmController::class, 'store']);
     Route::match(['put', 'patch'], '/films/{film}', [FilmController::class, 'update']);
     Route::delete('/films/{film}', [FilmController::class, 'destroy']);
-    
+
 });
 
 Route::middleware('auth:api')->prefix('transactions')->group(function () {
     Route::post('', [PayPalController::class, 'createTransaction']);
     Route::get('/success', [PayPalController::class, 'successTransaction'])->name('successTransaction');
     Route::get('/cancel', [PayPalController::class, 'cancelTransaction'])->name('cancelTransaction');
+
+    });
+
+
+    
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:api');
 
 
 Route::get('/tickets/{ticketId}/donwload', [TicketController::class, 'donwloadReceipt']);
 
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:api')->group(function(){
 
      Route::get('/reservation',[ReservationController::class, 'index'])->name('reservations');
      Route::get('/reservation/{id}',[ReservationController::class, 'show'])->name('reservations');
