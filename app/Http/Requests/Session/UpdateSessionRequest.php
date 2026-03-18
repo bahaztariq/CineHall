@@ -6,7 +6,7 @@ use App\Http\Requests\AdminFormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class UpdateFilmSessionRequest extends AdminFormRequest
+class UpdateSessionRequest extends AdminFormRequest
 {
     public function authorize(): bool
     {
