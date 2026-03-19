@@ -12,12 +12,17 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GenreController;
 
 Route::prefix('v1')->group(function () {
 
     // --- PUBLIC ROUTES ---
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
+
+    // Public Genres
+    Route::get('/genres', [GenreController::class, 'index']);
+    Route::get('/genres/{genre}', [GenreController::class, 'show']);
 
     // Public Films
     Route::get('/films', [FilmController::class, 'index']);
@@ -58,6 +63,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/rooms', [RoomController::class, 'store']);
         Route::put('/rooms/{room}', [RoomController::class, 'update']);
         Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
+
+        // Genres management (Admin only)
+        Route::post('/genres', [GenreController::class, 'store']);
+        Route::match(['put', 'patch'], '/genres/{genre}', [GenreController::class, 'update']);
+        Route::delete('/genres/{genre}', [GenreController::class, 'destroy']);
 
         // Films management
         Route::post('/films', [FilmController::class, 'store']);

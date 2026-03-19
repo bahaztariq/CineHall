@@ -1,0 +1,1234 @@
+{
+    "info": {
+        "_postman_id": "cinehall-api-collection",
+        "name": "CineHall API",
+        "description": "Complete API collection for the CineHall application. Base URL: http://localhost:8000/api/v1\n\nAuthentication: Set the `token` collection variable after login to auto-populate the Bearer token on all protected routes.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Password@123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user. Returns a JWT token."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                                    "pm.test('Token saved', function () {",
+                                    "  var json = pm.response.json();",
+                                    "  pm.expect(json.access_token).to.be.a('string');",
+                                    "  pm.collectionVariables.set('token', json.access_token);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"Password@123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        },
+                        "description": "Login with credentials. Returns a JWT token."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                                    "pm.test('Token saved', function () {",
+                                    "  var json = pm.response.json();",
+                                    "  pm.expect(json.access_token).to.be.a('string');",
+                                    "  pm.collectionVariables.set('token', json.access_token);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "logout"
+                            ]
+                        },
+                        "description": "Logout the authenticated user. Requires Bearer token."
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/refresh",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "refresh"
+                            ]
+                        },
+                        "description": "Refresh the JWT token. Requires Bearer token."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                                    "pm.test('Token saved', function () {",
+                                    "  var json = pm.response.json();",
+                                    "  pm.expect(json.access_token).to.be.a('string');",
+                                    "  pm.collectionVariables.set('token', json.access_token);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Profile",
+            "item": [
+                {
+                    "name": "Get My Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/profile",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "profile"
+                            ]
+                        },
+                        "description": "Get the authenticated user's profile."
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"NewPassword@123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/profile",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "profile"
+                            ]
+                        },
+                        "description": "Update profile information (name, email, password, image)."
+                    }
+                },
+                {
+                    "name": "Delete Account",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/profile",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "profile"
+                            ]
+                        },
+                        "description": "Delete the authenticated user's account."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Films (Public)",
+            "item": [
+                {
+                    "name": "List Films",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/films?page=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get paginated list of all films (with genre and image). 10 per page."
+                    }
+                },
+                {
+                    "name": "Search Films",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/films/search?film=Avengers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "film",
+                                    "value": "Avengers",
+                                    "description": "Film title to search for"
+                                }
+                            ]
+                        },
+                        "description": "Search films by title (partial match)."
+                    }
+                },
+                {
+                    "name": "Filter Films by Genre",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/films/filter?genre_id=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films",
+                                "filter"
+                            ],
+                            "query": [
+                                {
+                                    "key": "genre_id",
+                                    "value": "1",
+                                    "description": "Genre ID to filter by"
+                                }
+                            ]
+                        },
+                        "description": "Filter films by genre ID."
+                    }
+                },
+                {
+                    "name": "Get Film",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/films/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a specific film by ID."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Films (Admin)",
+            "item": [
+                {
+                    "name": "Create Film",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "Inception",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "A mind-bending thriller about dreams within dreams.",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "duration",
+                                    "value": "148",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "rate",
+                                    "value": "PG-13",
+                                    "type": "text",
+                                    "description": "One of: G, PG, PG-13, R, NC-17"
+                                },
+                                {
+                                    "key": "trailer",
+                                    "value": "https://www.youtube.com/watch?v=YoHD9XEInc0",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "genres[0]",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "genres[1]",
+                                    "value": "2",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": "",
+                                    "description": "Film poster image (jpg/jpeg/png, max 4MB)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/films",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films"
+                            ]
+                        },
+                        "description": "Create a new film. Admin only."
+                    }
+                },
+                {
+                    "name": "Update Film",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "X-HTTP-Method-Override",
+                                "value": "PUT"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "Inception Updated",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "An updated description for the film.",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "duration",
+                                    "value": "150",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "rate",
+                                    "value": "PG-13",
+                                    "type": "text",
+                                    "description": "One of: G, PG, PG-13, R, NC-17"
+                                },
+                                {
+                                    "key": "trailer",
+                                    "value": "https://www.youtube.com/watch?v=YoHD9XEInc0",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "genres[0]",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": "",
+                                    "description": "Optional: new poster image (jpg/jpeg/png, max 4MB)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/films/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films",
+                                "1"
+                            ]
+                        },
+                        "description": "Update a film. Admin only. Uses PUT/PATCH method."
+                    }
+                },
+                {
+                    "name": "Delete Film",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/films/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "films",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a film and its assets. Admin only."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Sessions (Public)",
+            "item": [
+                {
+                    "name": "List Sessions",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/sessions?page=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sessions"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get all film sessions ordered by start time. 15 per page."
+                    }
+                },
+                {
+                    "name": "Get Session",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/sessions/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sessions",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a specific film session with film and room details."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Sessions (Admin)",
+            "item": [
+                {
+                    "name": "Create Session",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"film_id\": 1,\n  \"room_id\": 1,\n  \"language\": \"english\",\n  \"start_time\": \"2026-04-01 18:00:00\",\n  \"end_time\": \"2026-04-01 20:30:00\",\n  \"price\": 12.99\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/sessions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sessions"
+                            ]
+                        },
+                        "description": "Create a new film session. Admin only."
+                    }
+                },
+                {
+                    "name": "Update Session",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"film_id\": 1,\n  \"room_id\": 1,\n  \"language\": \"english\",\n  \"start_time\": \"2026-04-01 19:00:00\",\n  \"end_time\": \"2026-04-01 21:30:00\",\n  \"price\": 14.99\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/sessions/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sessions",
+                                "1"
+                            ]
+                        },
+                        "description": "Update a film session. Admin only."
+                    }
+                },
+                {
+                    "name": "Delete Session",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/sessions/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "sessions",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a film session. Admin only."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Rooms (Public)",
+            "item": [
+                {
+                    "name": "List Rooms",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/rooms?page=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "rooms"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get paginated list of all rooms with their seats. 10 per page."
+                    }
+                },
+                {
+                    "name": "Get Room",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/rooms/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "rooms",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a specific room with all its seats."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Rooms (Admin)",
+            "item": [
+                {
+                    "name": "Create Room",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Room A\",\n  \"type\": \"Normal\",\n  \"capacity\": 50\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/rooms",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "rooms"
+                            ]
+                        },
+                        "description": "Create a room and auto-generate its seats. Admin only."
+                    }
+                },
+                {
+                    "name": "Update Room",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Room A Updated\",\n  \"type\": \"VIP\",\n  \"capacity\": 60\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/rooms/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "rooms",
+                                "1"
+                            ]
+                        },
+                        "description": "Update a room. Adjusts seats automatically if capacity changes. Admin only."
+                    }
+                },
+                {
+                    "name": "Delete Room",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/rooms/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "rooms",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a room and all its seats. Admin only."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reservations",
+            "item": [
+                {
+                    "name": "List My Reservations",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/reservation",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reservation"
+                            ]
+                        },
+                        "description": "Get all reservations for the authenticated user."
+                    }
+                },
+                {
+                    "name": "Create Reservation",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"session_id\": 1,\n  \"seat_id\": 5\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/reservation",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reservation"
+                            ]
+                        },
+                        "description": "Create a reservation. Seat must belong to the session's room. Reservation expires in 15 minutes if unpaid."
+                    }
+                },
+                {
+                    "name": "Get Reservation",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/reservation/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reservation",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a specific reservation with session, film, seat, and ticket details."
+                    }
+                },
+                {
+                    "name": "Update Reservation",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"accepted\",\n  \"paid_at\": \"2026-04-01 18:30:00\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/reservation/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reservation",
+                                "1"
+                            ]
+                        },
+                        "description": "Update a reservation's status. Setting status to 'accepted' auto-creates a ticket."
+                    }
+                },
+                {
+                    "name": "Cancel Reservation",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/reservation/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reservation",
+                                "1"
+                            ]
+                        },
+                        "description": "Cancel and delete a reservation."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Tickets",
+            "item": [
+                {
+                    "name": "Download Ticket Receipt",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/tickets/1/download",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "tickets",
+                                "1",
+                                "download"
+                            ]
+                        },
+                        "description": "Download the receipt/ticket PDF for a given ticket ID."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Payments - Stripe",
+            "item": [
+                {
+                    "name": "Create Stripe Session",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"reservation_id\": 1,\n  \"amount\": 12.99\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/transactions/stripe",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "stripe"
+                            ]
+                        },
+                        "description": "Initiate a Stripe Checkout session for a pending reservation."
+                    }
+                },
+                {
+                    "name": "Stripe Payment Success (Callback)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/stripe/success?reservation_id=1&session_id=cs_test_xxxxx",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "stripe",
+                                "success"
+                            ],
+                            "query": [
+                                {
+                                    "key": "reservation_id",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "session_id",
+                                    "value": "cs_test_xxxxx",
+                                    "description": "Stripe checkout session ID"
+                                }
+                            ]
+                        },
+                        "description": "Stripe success callback. Records payment and sets reservation to 'accepted'."
+                    }
+                },
+                {
+                    "name": "Stripe Payment Cancel (Callback)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/stripe/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "stripe",
+                                "cancel"
+                            ]
+                        },
+                        "description": "Stripe cancel callback. Returns a cancellation message."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Payments - PayPal",
+            "item": [
+                {
+                    "name": "Create PayPal Transaction",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"reservation_id\": 1,\n  \"amount\": 12.99\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/transactions/paypal",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "paypal"
+                            ]
+                        },
+                        "description": "Initiate a PayPal transaction for a pending reservation."
+                    }
+                },
+                {
+                    "name": "PayPal Payment Success (Callback)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/paypal/success",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "paypal",
+                                "success"
+                            ]
+                        },
+                        "description": "PayPal success callback."
+                    }
+                },
+                {
+                    "name": "PayPal Payment Cancel (Callback)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/paypal/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "paypal",
+                                "cancel"
+                            ]
+                        },
+                        "description": "PayPal cancel callback."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Get Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/statistics",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "statistics"
+                            ]
+                        },
+                        "description": "Get platform statistics. Admin only."
+                    }
+                },
+                {
+                    "name": "Toggle User Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/users/1/toggle-status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "1",
+                                "toggle-status"
+                            ]
+                        },
+                        "description": "Toggle a user's active/inactive status. Admin only."
+                    }
+                }
+            ]
+        }
+    ]
+}

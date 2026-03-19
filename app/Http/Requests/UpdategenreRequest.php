@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class UpdategenreRequest extends FormRequest
 {
@@ -12,7 +14,7 @@ class UpdategenreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Gate::allows('admin');
     }
 
     /**
@@ -22,8 +24,12 @@ class UpdategenreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $genreId = $this->route('genre') instanceof \App\Models\genre
+            ? $this->route('genre')->id
+            : $this->route('genre');
+
         return [
-            //
+            'name' => ['required', 'string', 'max:100', Rule::unique('genres', 'name')->ignore($genreId)],
         ];
     }
 }

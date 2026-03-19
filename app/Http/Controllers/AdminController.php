@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Reservation;
+use App\Models\reservation;
 use App\Models\session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -24,14 +24,14 @@ class AdminController extends Controller
         return response()->json([
         
             'all_users'        => User::all(),
-            'all_reservations' => Reservation::with(['user', 'session.film'])->get(),
+            'all_reservations' => reservation::with(['user', 'session.film'])->get(),
 
             'counts' => [
                 'total_users'        => User::count(),
-                'total_reservations' => Reservation::count(),
-                'pending_reservations'  => Reservation::where('status', 'pending')->count(),
-                'canceled_reservations' => Reservation::where('status', 'canceled')->count(),
-                'expired_reservations'  => Reservation::where('status', 'expired')->count(),
+                'total_reservations' => reservation::count(),
+                'pending_reservations'  => reservation::where('status', 'pending')->count(),
+                'canceled_reservations' => reservation::where('status', 'canceled')->count(),
+                'expired_reservations'  => reservation::where('status', 'expired')->count(),
             ],
 
             'rankings' => [

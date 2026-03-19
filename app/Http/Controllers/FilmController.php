@@ -16,7 +16,7 @@ class FilmController extends Controller
      */
     public function index()
     {
-        $films = Film::with(['genre', 'image'])->paginate(10);
+        $films = Film::with(['genres', 'image'])->paginate(10);
 
         return response()->json($films);
 
@@ -39,7 +39,9 @@ class FilmController extends Controller
 
         $film = Film::create($data);
 
-        $film->genres()->sync($data['genres']);
+        if (isset($data['genres'])) {
+            $film->genres()->sync($data['genres']);
+        }
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('films', 'public');
@@ -120,10 +122,10 @@ class FilmController extends Controller
 
     public function filter(Request $request)
     {
-        $query = Film::with(['genre', 'image']);
+        $query = Film::with(['genres', 'image']);
 
         if ($request->has('genre_id')) {
-            $query->whereHas('genre', function ($q) use ($request) {
+            $query->whereHas('genres', function ($q) use ($request) {
                 $q->where('genres.id', $request->genre_id);
             });
         }
