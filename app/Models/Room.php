@@ -11,6 +11,8 @@ class Room extends Model
 {
     /** @use HasFactory<\Database\Factories\RoomFactory> */
     use HasFactory;
+    
+    protected $fillable = ['name','type', 'capacity'];
 
     public function seats()
     {

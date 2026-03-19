@@ -15,6 +15,8 @@ class session extends Model
 
     protected $table = 'film_sessions' ;
 
+    protected $fillable = ['film_id','room_id','language','start_time','end_time','price'];
+
     public function film(): BelongsTo
     {
         return $this->belongsTo(Film::class);

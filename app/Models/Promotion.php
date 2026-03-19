@@ -11,6 +11,8 @@ class Promotion extends Model
     /** @use HasFactory<\Database\Factories\PromotionFactory> */
     use HasFactory;
 
+    protected $fillable = ['name', 'discount_percentage', 'start_date', 'end_date'];
+
     public function session(): BelongsTo
     {
         return $this->belongsTo(Session::class);

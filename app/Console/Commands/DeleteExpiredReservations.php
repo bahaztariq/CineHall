@@ -26,10 +26,12 @@ class DeleteExpiredReservations extends Command
      */
     public function handle()
     {
-        $reserevation = reservation::where('status','pending')
+        $deletedCount = reservation::where('status', 'pending')
             ->where('reserved_at', '<', now())
             ->delete();
 
-        $this->info("Deleted {$reserevation} expired Reservation.");
+        if ($deletedCount > 0) {
+            $this->info("Deleted {$deletedCount} expired reservation(s).");
+        }
     }
 }

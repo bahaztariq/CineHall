@@ -10,7 +10,7 @@ class Image extends Model
     
 
     public $timestamps = false;
-    public $fillable = ['path'];
+    protected $fillable = ['path'];
 
     public function imageable(): MorphTo
     {

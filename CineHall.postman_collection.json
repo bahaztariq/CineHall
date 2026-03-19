@@ -5,6 +5,31 @@
         "description": "Complete API collection for the CineHall application. Base URL: http://localhost:8000/api/v1\n\nAuthentication: Set the `token` collection variable after login to auto-populate the Bearer token on all protected routes.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [],
+    "header": [
+        {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+        },
+        {
+            "key": "Content-Type",
+            "value": "application/json"
+        },
+        {
+            "key": "Accept",
+            "value": "application/json"
+        }
+    ],
     "variable": [
         {
             "key": "base_url",
@@ -1226,6 +1251,167 @@
                             ]
                         },
                         "description": "Toggle a user's active/inactive status. Admin only."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Genres (Public)",
+            "item": [
+                {
+                    "name": "List Genres",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/genres",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "genres"
+                            ]
+                        },
+                        "description": "Get all genres with their film count."
+                    }
+                },
+                {
+                    "name": "Get Genre",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/genres/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "genres",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a specific genre with its films."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Genres (Admin)",
+            "item": [
+                {
+                    "name": "Create Genre",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Action\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/genres",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "genres"
+                            ]
+                        },
+                        "description": "Create a new genre. Admin only. Name must be unique."
+                    }
+                },
+                {
+                    "name": "Update Genre",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Sci-Fi\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/genres/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "genres",
+                                "1"
+                            ]
+                        },
+                        "description": "Update a genre name. Admin only."
+                    }
+                },
+                {
+                    "name": "Delete Genre",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/genres/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "genres",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a genre. Admin only."
                     }
                 }
             ]
