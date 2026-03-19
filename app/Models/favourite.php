@@ -9,4 +9,6 @@ class favourite extends Model
 {
     /** @use HasFactory<\Database\Factories\FavouriteFactory> */
     use HasFactory;
+
+    protected $fillable = ['user_id', 'film_id'];
 }

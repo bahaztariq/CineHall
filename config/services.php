@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'plans' => [
+            'monthly' => env('STRIPE_PRICE_MONTHLY', 'price_1234'),
+            'yearly' => env('STRIPE_PRICE_YEARLY', 'price_5678'),
+        ],
+    ],
 ];
+
+
+

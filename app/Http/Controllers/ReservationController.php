@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorereservationRequest;
-use App\Http\Requests\UpdatereservationRequest;
+use App\Http\Requests\StoreReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
 use App\Models\reservation;
+use App\Models\Seat;
+use App\Models\ticket;
+use App\Models\session;
+use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
@@ -13,7 +17,11 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        //
+        $reservations = reservation::with(['session.film', 'seat'])
+            ->where('user_id', auth()->id())
+            ->get();
+
+        return response()->json($reservations);
     }
 
     /**
@@ -27,9 +35,40 @@ class ReservationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorereservationRequest $request)
+    public function store(StoreReservationRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $session = session::findOrFail($validated['session_id']);
+        $seatId = $validated['seat_id'];
+
+        $seat = Seat::where('id', $seatId)
+            ->where('room_id', $session->room_id)
+            ->first();
+
+        if (!$seat) {
+            return response()->json(['message' => 'This seat does not exist in this room'], 422);
+        }
+
+        $isTaken = $seat->reservations()
+            ->where('session_id', $session->id)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->exists();
+
+        if ($isTaken) {
+            return response()->json(['message' => 'Seat is already reserved'], 422);
+        }
+
+        $reservation = $request->user()->reservations()->create([
+            'session_id'  => $session->id,
+            'seat_id'     => $seatId,
+            'reserved_at' => now()->addMinutes(15),
+            'status'      => 'pending',
+        ]);
+
+        return response()->json([
+            'message' => 'Reservation created. Please pay within 15 minutes to confirm your seat.',
+            'reservation_id' => $reservation->id
+        ]);
     }
 
     /**
@@ -37,7 +76,11 @@ class ReservationController extends Controller
      */
     public function show(reservation $reservation)
     {
-        //
+        if ($reservation->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($reservation->load(['session.film', 'seat', 'tickets']));
     }
 
     /**
@@ -51,9 +94,20 @@ class ReservationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatereservationRequest $request, reservation $reservation)
+    public function update(UpdateReservationRequest $request, reservation $reservation)
     {
-        //
+        if ($request->user()->id !== $reservation->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        DB::transaction(function () use ($request, $reservation) {
+            $reservation->update($request->validated());
+        });
+
+        return response()->json([
+            'message' => 'Reservation updated successfully',
+            'reservation' => $reservation->load(['session.film', 'seat', 'tickets'])
+        ]);
     }
 
     /**
@@ -61,6 +115,12 @@ class ReservationController extends Controller
      */
     public function destroy(reservation $reservation)
     {
-        //
+        if (auth()->id() !== $reservation->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $reservation->delete();
+
+        return response()->json(['message' => 'Reservation Deleted successfully']);
     }
 }
