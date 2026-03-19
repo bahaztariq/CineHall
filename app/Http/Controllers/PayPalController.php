@@ -4,23 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use App\Models\reservation;
+use App\Models\ticket;
+use App\Services\ReservationService;
 use Illuminate\Http\Request;
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Auth;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PayPalController extends Controller
 {
+    protected $reservationService;
+
+    public function __construct(ReservationService $reservationService)
+    {
+        $this->reservationService = $reservationService;
+    }
+
     public function createTransaction(Request $request)
     {
         $request->validate([
             'reservation_id' => 'required|exists:reservations,id',
-            'amount' => 'required|numeric|min:0.01',
+            'amount'         => 'required|numeric|min:0.01',
         ]);
 
         $reservation_id = $request->reservation_id;
-        $amount = $request->amount;
+        $amount         = $request->amount;
 
-        // Security check: Ensure reservation belongs to the user
+        // Security check: reservation must belong to the authenticated user
         $reservation = reservation::where('id', $reservation_id)
             ->where('user_id', Auth::id())
             ->first();
@@ -38,7 +47,7 @@ class PayPalController extends Controller
         $provider->getAccessToken();
 
         $response = $provider->createOrder([
-            "intent" => "CAPTURE",
+            "intent"              => "CAPTURE",
             "application_context" => [
                 "return_url" => route('successTransaction', ['reservation_id' => $reservation_id, 'amount' => $amount]),
                 "cancel_url" => route('cancelTransaction'),
@@ -47,10 +56,10 @@ class PayPalController extends Controller
                 0 => [
                     "amount" => [
                         "currency_code" => config('paypal.currency', 'USD'),
-                        "value" => $amount
-                    ]
-                ]
-            ]
+                        "value"         => $amount,
+                    ],
+                ],
+            ],
         ]);
 
         if (isset($response['id']) && $response['id'] != null) {
@@ -69,54 +78,50 @@ class PayPalController extends Controller
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
-        
+
         $response = $provider->capturePaymentOrder($request['token']);
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $reservation_id = $request->reservation_id;
-            $amount = $request->amount;
+            $amount         = $request->amount;
+            $transaction_id = $response['id'];
 
-            // Integrity check: match the captured amount with expected amount
-            // (Optional, PayPal validation handles this but good for local logs)
-
-            // Create payment record
+            // Create payment record (idempotent)
             Payment::updateOrCreate(
-                ['transaction_id' => $response['id']],
+                ['transaction_id' => $transaction_id],
                 [
                     'reservation_id' => $reservation_id,
-                    'amount' => $amount,
-                    'status' => 'completed',
+                    'amount'         => $amount,
+                    'status'         => 'completed',
                     'payment_method' => 'paypal',
+                    'transaction_id' => $transaction_id,
                 ]
             );
 
-            // Update reservation status
+            // Update reservation status to accepted
             $reservation = reservation::find($reservation_id);
             if ($reservation) {
-                $reservation->update([
-                    'status' => 'accepted',
-                    'paid_at' => now(),
-                ]);
+                $this->reservationService->confirmPayment($reservation);
             }
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'Payment successful.',
-                'transaction_id' => $response['id']
+                'status'         => 'success',
+                'message'        => 'Payment successful.',
+                'transaction_id' => $transaction_id,
             ]);
         }
 
         return response()->json([
-            'status' => 'error',
-            'message' => $response['message'] ?? 'Payment capture failed.'
+            'status'  => 'error',
+            'message' => $response['message'] ?? 'Payment capture failed.',
         ], 500);
     }
 
     public function cancelTransaction(Request $request)
     {
         return response()->json([
-            'status' => 'error',
-            'message' => 'You have canceled the transaction.'
+            'status'  => 'error',
+            'message' => 'You have canceled the transaction.',
         ]);
     }
 }

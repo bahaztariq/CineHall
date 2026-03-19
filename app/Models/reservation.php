@@ -49,31 +49,6 @@ class reservation extends Model
       
       return $this->status === 'accepted';
     }
-
-    /**
-     * Confirm a payment for the reservation.
-     * Updates status to 'accepted', sets 'paid_at', and creates a ticket.
-     */
-    public function confirmPayment()
-    {
-        if ($this->status === 'accepted') {
-            return;
-        }
-
-        $this->update([
-            'status'  => 'accepted',
-            'paid_at' => now(),
-        ]);
-
-        // Auto-create a ticket for the confirmed reservation
-        return ticket::firstOrCreate(
-            ['reservation_id' => $this->id],
-            [
-                'user_id' => $this->user_id,
-                'seat_id' => $this->seat_id,
-            ]
-        );
-    }
 }
 
 

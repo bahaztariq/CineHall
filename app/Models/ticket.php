@@ -24,9 +24,9 @@ class ticket extends Model
 
 
     public function seat(){
-        return $this->belongsTo(seat::class);
+        return $this->belongsTo(Seat::class);
     }
     public function user(){
-        return $this->belongsTo(user::class);
+        return $this->belongsTo(User::class);
     }
 }

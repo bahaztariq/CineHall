@@ -102,14 +102,6 @@ class ReservationController extends Controller
 
         DB::transaction(function () use ($request, $reservation) {
             $reservation->update($request->validated());
-
-            if ($reservation->status === 'accepted') {
-                ticket::firstOrCreate([
-                    'reservation_id' => $reservation->id,
-                    'user_id' => $reservation->user_id,
-                    'seat_id' => $reservation->seat_id,
-                ]);
-            }
         });
 
         return response()->json([

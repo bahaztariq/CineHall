@@ -15,7 +15,9 @@
         <p><strong>Seat:</strong> {{ $ticket->seat_id }}</p>
         <p><strong>User ID:</strong> {{ $ticket->user_id }}</p>
 
-        <img src="data:image/png;base64, {{ $qrCode }}" alt="QR Code">
+        <div class="qr-code">
+            {!! $qrCode !!}
+        </div>
     </div>
 </body>
 </html>
