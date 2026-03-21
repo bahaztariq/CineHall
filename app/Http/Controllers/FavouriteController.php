@@ -6,8 +6,12 @@ use App\Http\Requests\StorefavouriteRequest;
 use App\Http\Requests\UpdatefavouriteRequest;
 use App\Models\favourite;
 
+use OpenApi\Attributes as OA;
+
 class FavouriteController extends Controller
 {
+    #[OA\Tag(name: "Favourites", description: "User favourite films")]
+
     /**
      * Display a listing of the resource.
      */

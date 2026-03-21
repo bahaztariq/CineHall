@@ -9,12 +9,20 @@ use App\Models\Seat;
 use App\Models\ticket;
 use App\Models\session;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class ReservationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    #[OA\Get(
+        path: '/reservations',
+        summary: 'List all reservations for the authenticated user',
+        tags: ['Reservations'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Successful operation', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Reservation'))),
+            new OA\Response(response: 401, description: 'Unauthenticated')
+        ]
+    )]
     public function index()
     {
         $reservations = reservation::with(['session.film', 'seat'])
@@ -32,9 +40,36 @@ class ReservationController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    #[OA\Post(
+        path: '/reservations',
+        summary: 'Create a new reservation',
+        tags: ['Reservations'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['session_id', 'seat_id'],
+                properties: [
+                    new OA\Property(property: 'session_id', type: 'integer', example: 1),
+                    new OA\Property(property: 'seat_id', type: 'integer', example: 1)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Reservation created successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string'),
+                        new OA\Property(property: 'reservation_id', type: 'integer')
+                    ]
+                )
+            ),
+            new OA\Response(response: 422, description: 'Validation error or seat taken'),
+            new OA\Response(response: 401, description: 'Unauthenticated')
+        ]
+    )]
     public function store(StoreReservationRequest $request)
     {
         $validated = $request->validated();
@@ -71,9 +106,20 @@ class ReservationController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    #[OA\Get(
+        path: '/reservations/{reservation}',
+        summary: 'Get reservation details',
+        tags: ['Reservations'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'reservation', in: 'path', required: true, description: 'Reservation ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Successful operation', content: new OA\JsonContent(ref: '#/components/schemas/Reservation')),
+            new OA\Response(response: 403, description: 'Unauthorized'),
+            new OA\Response(response: 404, description: 'Reservation not found')
+        ]
+    )]
     public function show(reservation $reservation)
     {
         if ($reservation->user_id !== auth()->id()) {
@@ -91,9 +137,23 @@ class ReservationController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    #[OA\Put(
+        path: '/reservations/{reservation}',
+        summary: 'Update a reservation',
+        tags: ['Reservations'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'reservation', in: 'path', required: true, description: 'Reservation ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/Reservation')
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Reservation updated successfully', content: new OA\JsonContent(ref: '#/components/schemas/Reservation')),
+            new OA\Response(response: 403, description: 'Unauthorized')
+        ]
+    )]
     public function update(UpdateReservationRequest $request, reservation $reservation)
     {
         if ($request->user()->id !== $reservation->user_id) {
@@ -110,9 +170,19 @@ class ReservationController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    #[OA\Delete(
+        path: '/reservations/{reservation}',
+        summary: 'Cancel/Delete a reservation',
+        tags: ['Reservations'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'reservation', in: 'path', required: true, description: 'Reservation ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Reservation deleted successfully'),
+            new OA\Response(response: 403, description: 'Unauthorized')
+        ]
+    )]
     public function destroy(reservation $reservation)
     {
         if (auth()->id() !== $reservation->user_id) {

@@ -8,6 +8,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(
+    schema: "Session",
+    title: "Session Model",
+    description: "Session (Film Showing) model",
+    properties: [
+        new OA\Property(property: "id", type: "integer", readOnly: true, example: 1),
+        new OA\Property(property: "film_id", type: "integer", example: 1),
+        new OA\Property(property: "room_id", type: "integer", example: 1),
+        new OA\Property(property: "language", type: "string", example: "English"),
+        new OA\Property(property: "start_time", type: "string", format: "date-time", example: "2024-03-22T18:00:00Z"),
+        new OA\Property(property: "end_time", type: "string", format: "date-time", example: "2024-03-22T20:00:00Z"),
+        new OA\Property(property: "price", type: "number", format: "float", example: 12.50),
+        new OA\Property(property: "created_at", type: "string", format: "date-time", readOnly: true),
+        new OA\Property(property: "updated_at", type: "string", format: "date-time", readOnly: true)
+    ]
+)]
 class session extends Model
 {
     /** @use HasFactory<\Database\Factories\SessionFactory> */

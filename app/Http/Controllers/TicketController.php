@@ -8,11 +8,24 @@ use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use OpenApi\Attributes as OA;
+
 class TicketController extends Controller
 {
-    /**
-     * Download the ticket as a PDF receipt.
-     */
+    #[OA\Get(
+        path: '/tickets/{ticketId}/download',
+        summary: 'Download the ticket as a PDF receipt',
+        tags: ['Tickets'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'ticketId', in: 'path', required: true, description: 'Ticket ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'PDF file generated', content: new OA\MediaType(mediaType: 'application/pdf')),
+            new OA\Response(response: 403, description: 'Unauthorized'),
+            new OA\Response(response: 404, description: 'Ticket not found')
+        ]
+    )]
     public function donwloadReceipt($ticketId)
     {
         $ticket = ticket::with([

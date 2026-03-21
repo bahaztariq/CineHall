@@ -8,19 +8,31 @@ use App\Models\ticket;
 use App\Services\ReservationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
 class StripeController extends Controller
 {
-    protected $reservationService;
-
-    public function __construct(ReservationService $reservationService)
-    {
-        $this->reservationService = $reservationService;
-    }
-
-    /**
-     * Create a Stripe Checkout Session for a reservation.
-     */
+    #[OA\Post(
+        path: '/transactions/stripe',
+        summary: 'Create a Stripe Checkout Session',
+        tags: ['Payments'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['reservation_id', 'amount'],
+                properties: [
+                    new OA\Property(property: 'reservation_id', type: 'integer'),
+                    new OA\Property(property: 'amount', type: 'number')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Stripe session created'),
+            new OA\Response(response: 400, description: 'Invalid request or already paid'),
+            new OA\Response(response: 401, description: 'Unauthenticated')
+        ]
+    )]
     public function createSession(Request $request)
     {
         $request->validate([
@@ -47,9 +59,19 @@ class StripeController extends Controller
         ]);
     }
 
-    /**
-     * Handle the successful payment return.
-     */
+    #[OA\Get(
+        path: '/transactions/stripe/success',
+        summary: 'Handle successful Stripe payment',
+        tags: ['Payments'],
+        parameters: [
+            new OA\Parameter(name: 'reservation_id', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'session_id', in: 'query', required: true, schema: new OA\Schema(type: 'string'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Payment confirmed'),
+            new OA\Response(response: 400, description: 'Invalid request')
+        ]
+    )]
     public function handleSuccess(Request $request)
     {
         $reservation_id = $request->get('reservation_id');
@@ -86,9 +108,14 @@ class StripeController extends Controller
         ]);
     }
 
-    /**
-     * Handle payment cancellation.
-     */
+    #[OA\Get(
+        path: '/transactions/stripe/cancel',
+        summary: 'Handle Stripe payment cancellation',
+        tags: ['Payments'],
+        responses: [
+            new OA\Response(response: 200, description: 'Payment canceled')
+        ]
+    )]
     public function handleCancel()
     {
         return response()->json([
