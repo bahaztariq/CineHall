@@ -8,12 +8,18 @@ use App\Http\Requests\Film\StoreFilmRequest;
 use App\Http\Requests\Film\UpdateFilmRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
+use OpenApi\Attributes as OA;
 
 class FilmController extends Controller
 {
-    /**
-     * List all films with associated genres and images.
-     */
+    #[OA\Get(
+        path: '/films',
+        summary: 'List all films',
+        tags: ['Films'],
+        responses: [
+            new OA\Response(response: 200, description: 'Successful operation')
+        ]
+    )]
     public function index()
     {
         $films = Film::with(['genres', 'image'])->paginate(10);
@@ -22,17 +28,48 @@ class FilmController extends Controller
 
     }
 
-    /**
-     * Show a specific film.
-     */
+    #[OA\Get(
+        path: '/films/{film}',
+        summary: 'Show a specific film',
+        tags: ['Films'],
+        parameters: [
+            new OA\Parameter(name: 'film', in: 'path', required: true, description: 'Film ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Successful operation', content: new OA\JsonContent(ref: '#/components/schemas/Film')),
+            new OA\Response(response: 404, description: 'Film not found')
+        ]
+    )]
     public function show(Film $film)
     {
         return response()->json($film->load(['genres', 'image']));
     }
 
-    /**
-     * Create a film.
-     */
+    #[OA\Post(
+        path: '/films',
+        summary: 'Create a new film',
+        tags: ['Films'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: 'title', type: 'string'),
+                        new OA\Property(property: 'description', type: 'string'),
+                        new OA\Property(property: 'duration', type: 'integer'),
+                        new OA\Property(property: 'rate', type: 'string'),
+                        new OA\Property(property: 'trailer', type: 'string'),
+                        new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: 'integer')),
+                        new OA\Property(property: 'image', type: 'string', format: 'binary')
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Film created successfully', content: new OA\JsonContent(ref: '#/components/schemas/Film'))
+        ]
+    )]
     public function store(StoreFilmRequest $request)
     {
         $data = $request->validated();
@@ -53,9 +90,30 @@ class FilmController extends Controller
 
 
 
-    /**
-     * Update a film.
-     */
+    #[OA\Put(
+        path: '/films/{film}',
+        summary: 'Update an existing film',
+        tags: ['Films'],
+        parameters: [
+            new OA\Parameter(name: 'film', in: 'path', required: true, description: 'Film ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'title', type: 'string'),
+                    new OA\Property(property: 'description', type: 'string'),
+                    new OA\Property(property: 'duration', type: 'integer'),
+                    new OA\Property(property: 'rate', type: 'string'),
+                    new OA\Property(property: 'trailer', type: 'string'),
+                    new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: 'integer'))
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Film updated successfully', content: new OA\JsonContent(ref: '#/components/schemas/Film'))
+        ]
+    )]
     public function update(UpdateFilmRequest $request, Film $film)
     {
         $data = $request->validated();
@@ -83,9 +141,18 @@ class FilmController extends Controller
         return response()->json($film->load(['genres', 'image']));
     }
 
-    /**
-     * Delete a film.
-     */
+    #[OA\Delete(
+        path: '/films/{film}',
+        summary: 'Delete a film',
+        tags: ['Films'],
+        parameters: [
+            new OA\Parameter(name: 'film', in: 'path', required: true, description: 'Film ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Film deleted successfully'),
+            new OA\Response(response: 403, description: 'Unauthorized')
+        ]
+    )]
     public function destroy(Film $film)
     {
 
@@ -103,6 +170,27 @@ class FilmController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: '/films/search',
+        summary: 'Search films by title',
+        tags: ['Films'],
+        parameters: [
+            new OA\Parameter(name: 'film', in: 'query', required: true, description: 'Film title or part of it', schema: new OA\Schema(type: 'string'))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Films found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'film is found'),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/Film'))
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: 'Film not found')
+        ]
+    )]
     public function search(Request $request)
     {
         $searched = $request->film;
@@ -120,6 +208,27 @@ class FilmController extends Controller
         ], 200);
     }
 
+    #[OA\Get(
+        path: '/films/filter',
+        summary: 'Filter films by genre',
+        tags: ['Films'],
+        parameters: [
+            new OA\Parameter(name: 'genre_id', in: 'query', required: true, description: 'Genre ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Filtered films found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Filtered films found'),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/Film'))
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: 'No films match this genre')
+        ]
+    )]
     public function filter(Request $request)
     {
         $query = Film::with(['genres', 'image']);

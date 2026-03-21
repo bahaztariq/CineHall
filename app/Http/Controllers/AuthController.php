@@ -12,6 +12,34 @@ use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: '/register',
+        summary: 'Register a new user',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['name', 'email', 'password'],
+                    properties: [
+                        new OA\Property(property: 'name', type: 'string'),
+                        new OA\Property(property: 'email', type: 'string', format: 'email'),
+                        new OA\Property(property: 'password', type: 'string', format: 'password'),
+                        new OA\Property(property: 'image', type: 'string', format: 'binary')
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'User registered successfully', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'access_token', type: 'string'),
+                new OA\Property(property: 'token_type', type: 'string', example: 'bearer'),
+                new OA\Property(property: 'expires_in', type: 'integer')
+            ])),
+            new OA\Response(response: 422, description: 'Validation error')
+        ]
+    )]
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -39,6 +67,29 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
+    #[OA\Post(
+        path: '/login',
+        summary: 'Login to the application',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Login successful', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'access_token', type: 'string'),
+                new OA\Property(property: 'token_type', type: 'string', example: 'bearer'),
+                new OA\Property(property: 'expires_in', type: 'integer')
+            ])),
+            new OA\Response(response: 401, description: 'Unauthorized')
+        ]
+    )]
     public function login()
     {
         $credentials = request(['email', 'password']);
@@ -50,6 +101,16 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
+    #[OA\Post(
+        path: '/logout',
+        summary: 'Logout of the application',
+        tags: ['Authentication'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Successfully logged out'),
+            new OA\Response(response: 401, description: 'Unauthenticated')
+        ]
+    )]
     public function logout()
     {
         auth()->logout();

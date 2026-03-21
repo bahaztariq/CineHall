@@ -9,10 +9,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use OpenApi\Attributes as OA;
 
 class AdminController extends Controller
 {
-
+    #[OA\Get(
+        path: '/statistics',
+        summary: 'Get system-wide statistics (Admin only)',
+        tags: ['Admin'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Successful operation'),
+            new OA\Response(response: 403, description: 'Forbidden - User is not an admin')
+        ]
+    )]
     public function statistics()
     {
         Gate::authorize('admin');
@@ -59,6 +69,19 @@ class AdminController extends Controller
 
 
 
+    #[OA\Patch(
+        path: '/users/{user}/toggle-status',
+        summary: 'Toggle user status between Active and Banned (Admin only)',
+        tags: ['Admin'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'user', in: 'path', required: true, description: 'User ID', schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Status toggled successfully'),
+            new OA\Response(response: 403, description: 'Forbidden/Unauthorized')
+        ]
+    )]
     public function toggleUserStatus(User $user)
     {
         Gate::authorize('admin');

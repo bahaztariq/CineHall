@@ -12,6 +12,22 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(
+    schema: "User",
+    title: "User Model",
+    description: "User model",
+    properties: [
+        new OA\Property(property: "id", type: "integer", readOnly: true, example: 1),
+        new OA\Property(property: "name", type: "string", example: "John Doe"),
+        new OA\Property(property: "email", type: "string", format: "email", example: "john@example.com"),
+        new OA\Property(property: "is_admin", type: "boolean", example: false),
+        new OA\Property(property: "status", type: "string", example: "active"),
+        new OA\Property(property: "created_at", type: "string", format: "date-time", readOnly: true),
+        new OA\Property(property: "updated_at", type: "string", format: "date-time", readOnly: true)
+    ]
+)]
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

@@ -6,15 +6,50 @@ use Doctrine\Inflector\Rules\Ruleset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules;
-
+use OpenApi\Attributes as OA;
 
 class ProfileController extends Controller
 {
+    #[OA\Get(
+        path: '/profile',
+        summary: 'Get authenticated user profile',
+        tags: ['Profile'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Successful operation', content: new OA\JsonContent(ref: '#/components/schemas/User')),
+            new OA\Response(response: 401, description: 'Unauthenticated')
+        ]
+    )]
     public function me()
     {
         return response()->json(auth()->user());
     }
 
+    #[OA\Post(
+        path: '/profile',
+        summary: 'Update authenticated user profile',
+        tags: ['Profile'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: 'name', type: 'string'),
+                        new OA\Property(property: 'email', type: 'string', format: 'email'),
+                        new OA\Property(property: 'password', type: 'string', format: 'password'),
+                        new OA\Property(property: 'password_confirmation', type: 'string', format: 'password'),
+                        new OA\Property(property: 'image', type: 'string', format: 'binary')
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Profile updated successfully', content: new OA\JsonContent(ref: '#/components/schemas/User')),
+            new OA\Response(response: 422, description: 'Validation error')
+        ]
+    )]
     public function update(Request $request)
     {
         $user = auth()->user();
@@ -59,6 +94,16 @@ class ProfileController extends Controller
         ]);
     }
 
+    #[OA\Delete(
+        path: '/profile',
+        summary: 'Delete authenticated user account',
+        tags: ['Profile'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Account deleted successfully'),
+            new OA\Response(response: 401, description: 'Unauthenticated')
+        ]
+    )]
     public function delete()
     {
         $user = auth()->user();

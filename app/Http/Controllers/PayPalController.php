@@ -9,16 +9,31 @@ use App\Services\ReservationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use OpenApi\Attributes as OA;
 
 class PayPalController extends Controller
 {
-    protected $reservationService;
-
-    public function __construct(ReservationService $reservationService)
-    {
-        $this->reservationService = $reservationService;
-    }
-
+    #[OA\Post(
+        path: '/transactions/paypal',
+        summary: 'Create a PayPal transaction order',
+        tags: ['Payments'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['reservation_id', 'amount'],
+                properties: [
+                    new OA\Property(property: 'reservation_id', type: 'integer'),
+                    new OA\Property(property: 'amount', type: 'number')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'PayPal approval URL returned'),
+            new OA\Response(response: 403, description: 'Unauthorized/Forbidden'),
+            new OA\Response(response: 500, description: 'Internal server error')
+        ]
+    )]
     public function createTransaction(Request $request)
     {
         $request->validate([
@@ -73,6 +88,20 @@ class PayPalController extends Controller
         return response()->json(['error' => $response['message'] ?? 'Unable to create PayPal order.'], 500);
     }
 
+    #[OA\Get(
+        path: '/transactions/paypal/success',
+        summary: 'Handle successful PayPal payment',
+        tags: ['Payments'],
+        parameters: [
+            new OA\Parameter(name: 'token', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'reservation_id', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'amount', in: 'query', required: true, schema: new OA\Schema(type: 'number'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Payment confirmed'),
+            new OA\Response(response: 500, description: 'Capture failed')
+        ]
+    )]
     public function successTransaction(Request $request)
     {
         $provider = new PayPalClient;
@@ -117,6 +146,14 @@ class PayPalController extends Controller
         ], 500);
     }
 
+    #[OA\Get(
+        path: '/transactions/paypal/cancel',
+        summary: 'Handle PayPal payment cancellation',
+        tags: ['Payments'],
+        responses: [
+            new OA\Response(response: 200, description: 'Payment canceled')
+        ]
+    )]
     public function cancelTransaction(Request $request)
     {
         return response()->json([
