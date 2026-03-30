@@ -12,6 +12,13 @@ use OpenApi\Attributes as OA;
 
 class StripeController extends Controller
 {
+    protected ReservationService $reservationService;
+
+    public function __construct(ReservationService $reservationService)
+    {
+        $this->reservationService = $reservationService;
+    }
+
     #[OA\Post(
         path: '/transactions/stripe',
         summary: 'Create a Stripe Checkout Session',
@@ -36,12 +43,11 @@ class StripeController extends Controller
     public function createSession(Request $request)
     {
         $request->validate([
-            'reservation_id' => 'required|exists:reservations,id',
-            'amount'         => 'required|numeric|min:1',
+            'reservation_id' => 'required|exists:reservations,id'
         ]);
 
         $user = Auth::user();
-        $reservation = reservation::where('id', $request->reservation_id)
+        $reservation = reservation::with('session')->where('id', $request->reservation_id)
             ->where('user_id', $user->id)
             ->firstOrFail();
 
@@ -49,7 +55,9 @@ class StripeController extends Controller
             return response()->json(['error' => 'Reservation already paid.'], 400);
         }
 
-        return $user->checkout([$request->amount * 100 => 'Reservation Payment'], [
+        $amount = $reservation->session->price;
+
+        return $user->checkout([$amount * 100 => 'Reservation Payment'], [
             'success_url' => route('stripe.success', ['reservation_id' => $reservation->id]) . '&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => route('stripe.cancel'),
             'metadata'    => [

@@ -13,6 +13,13 @@ use OpenApi\Attributes as OA;
 
 class PayPalController extends Controller
 {
+    protected ReservationService $reservationService;
+
+    public function __construct(ReservationService $reservationService)
+    {
+        $this->reservationService = $reservationService;
+    }
+
     #[OA\Post(
         path: '/transactions/paypal',
         summary: 'Create a PayPal transaction order',
@@ -37,21 +44,21 @@ class PayPalController extends Controller
     public function createTransaction(Request $request)
     {
         $request->validate([
-            'reservation_id' => 'required|exists:reservations,id',
-            'amount'         => 'required|numeric|min:0.01',
+            'reservation_id' => 'required|exists:reservations,id'
         ]);
 
         $reservation_id = $request->reservation_id;
-        $amount         = $request->amount;
 
         // Security check: reservation must belong to the authenticated user
-        $reservation = reservation::where('id', $reservation_id)
+        $reservation = reservation::with('session')->where('id', $reservation_id)
             ->where('user_id', Auth::id())
             ->first();
 
         if (!$reservation) {
             return response()->json(['error' => 'Unauthorized or invalid reservation.'], 403);
         }
+
+        $amount = $reservation->session->price;
 
         if ($reservation->status === 'accepted') {
             return response()->json(['error' => 'Reservation already paid.'], 400);
@@ -112,7 +119,8 @@ class PayPalController extends Controller
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $reservation_id = $request->reservation_id;
-            $amount         = $request->amount;
+            $reservation    = reservation::with('session')->findOrFail($reservation_id);
+            $amount         = $reservation->session->price;
             $transaction_id = $response['id'];
 
             // Create payment record (idempotent)
@@ -123,7 +131,6 @@ class PayPalController extends Controller
                     'amount'         => $amount,
                     'status'         => 'completed',
                     'payment_method' => 'paypal',
-                    'transaction_id' => $transaction_id,
                 ]
             );
 
