@@ -63,8 +63,14 @@ class AuthController extends Controller
             return $user;
         });
 
-        $token = auth()->login($user);
-        return $this->respondWithToken($token);
+        Auth::login($user);
+
+        if (request()->wantsJson()) {
+            $token = auth()->login($user);
+            return $this->respondWithToken($token);
+        }
+
+        return redirect()->route('dashboard');
     }
 
     #[OA\Post(
@@ -90,15 +96,23 @@ class AuthController extends Controller
             new OA\Response(response: 401, description: 'Unauthorized')
         ]
     )]
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        // Force the 'web' guard specifically for the browser session
+        if (Auth::guard('web')->attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended('/welcome');
         }
 
-        return $this->respondWithToken($token);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 
     #[OA\Post(

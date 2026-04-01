@@ -18,7 +18,11 @@ class FilmFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->sentence(3),
+            'description' => $this->faker->text(200),
+            'duration' => $this->faker->randomFloat(2, 1.5, 3), // in hours
+            'rate' => $this->faker->randomElement(['G', 'PG', 'PG-13', 'R', 'NC-17']),
+            'trailer' => 'https://youtube.com/watch?v=example',
         ];
     }
 }
