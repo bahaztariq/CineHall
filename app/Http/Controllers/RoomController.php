@@ -6,6 +6,7 @@ use App\Models\Room;
 use App\Models\Seat;
 use App\Http\Requests\Room\StoreRoomRequest;
 use App\Http\Requests\Room\UpdateRoomRequest;
+use App\Models\reservation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use App\Models\session;
@@ -160,5 +161,26 @@ class RoomController extends Controller
                 ->limit($toDelete)
                 ->delete();
         }
+    }
+
+    public function getSeats($sessionId)
+    {
+        $session = Session::findOrFail($sessionId);
+
+        $seats = Seat::where('room_id', $session->room_id)->get();
+
+        $reservedSeatIds = reservation::where('session_id', $sessionId)
+            ->pluck('seat_id')
+            ->toArray();
+
+        $seatMap = $seats->map(function ($seat) use ($reservedSeatIds) {
+            return [
+                'id' => $seat->id,
+                'label' => $seat->seat_number,
+                'is_booked' => in_array($seat->id, $reservedSeatIds),
+            ];
+        });
+        
+        return response()->json($seatMap);
     }
 }

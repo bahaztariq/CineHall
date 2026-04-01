@@ -30,11 +30,12 @@ Route::prefix('v1')->group(function () {
     Route::get('/films/filter', [FilmController::class, 'filter']);
     Route::get('/films/{film}', [FilmController::class, 'show']);
 
-    // Public Sessions & Rooms
+    // Public Sessions & Rooms & seats
     Route::get('/sessions', [SessionController::class, 'index']);
     Route::get('/sessions/{film_session}', [SessionController::class, 'show']);
     Route::get('/rooms', [RoomController::class, 'index']);
     Route::get('/rooms/{room}', [RoomController::class, 'show']);
+    Route::get('/rooms/{room}/seats', [RoomController::class, 'getSeats']);
 
     // --- PROTECTED ROUTES (JWT) ---
     Route::middleware('auth:api')->group(function () {

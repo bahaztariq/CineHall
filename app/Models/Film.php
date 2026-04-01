@@ -31,7 +31,7 @@ class Film extends Model
 
     protected $fillable = ['title', 'description', 'duration', 'rate', 'trailer'];
 
-    public function session(): HasMany
+    public function sessions(): HasMany
     {
         return $this->hasMany(Session::class);
     }

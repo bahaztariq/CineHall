@@ -31,9 +31,11 @@ class session extends Model
     /** @use HasFactory<\Database\Factories\SessionFactory> */
     use HasFactory;
 
-    protected $table = 'film_sessions' ;
+    protected $with = ['room'];
+    
+    protected $table = 'film_sessions';
 
-    protected $fillable = ['film_id','room_id','language','start_time','end_time','price'];
+    protected $fillable = ['film_id', 'room_id', 'language', 'start_time', 'end_time', 'price'];
 
     public function film(): BelongsTo
     {
@@ -49,5 +51,4 @@ class session extends Model
     {
         return $this->hasMany(Reservation::class);
     }
-
 }

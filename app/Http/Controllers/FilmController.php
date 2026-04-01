@@ -22,7 +22,7 @@ class FilmController extends Controller
     )]
     public function index()
     {
-        $films = Film::with(['genres', 'image'])->paginate(10);
+        $films = Film::with(['genres', 'image', 'sessions'])->paginate(10);
 
         return response()->json($films);
 
